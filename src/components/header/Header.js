@@ -8,8 +8,19 @@ import {
 	SupervisorAccount,
 } from '@material-ui/icons';
 import HeaderOption from './headerOption/HeaderOption';
+import { useDispatch } from 'react-redux';
+import { setLogout } from '../../features/userSlice';
+import { auth } from '../../firebase';
 
 const Header = () => {
+	const dispatch = useDispatch();
+
+	const handleSignout = () => {
+		// console.log('supposed to sign out');
+		dispatch(setLogout());
+		auth.signOut();
+	};
+
 	return (
 		<div className="header">
 			<div className="header__left">
@@ -33,6 +44,7 @@ const Header = () => {
 				<HeaderOption
 					avatar="https://images.pexels.com/photos/3277802/pexels-photo-3277802.jpeg?auto=compress&cs=tinysrgb&h=750&w=1260"
 					title="Me"
+					onClick={handleSignout}
 				/>
 			</div>
 		</div>

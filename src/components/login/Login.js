@@ -42,6 +42,19 @@ const Login = () => {
 
 	const signIn = ev => {
 		ev.preventDefault();
+		auth
+			.signInWithEmailAndPassword(email, password)
+			.then(userAuth => {
+				dispatch(
+					setLogin({
+						email: userAuth.user.email,
+						uid: userAuth.user.id,
+						displayName: userAuth.user.displayName,
+						photoUrl: userAuth.user.photoURL,
+					})
+				);
+			})
+			.catch(error => alert(error));
 	};
 
 	const handleChange = ev => {

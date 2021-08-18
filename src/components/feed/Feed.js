@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
 	CalendarViewDay,
 	Create,
@@ -9,12 +9,37 @@ import {
 import './Feed.scss';
 import InputOption from './inputOption/InputOption';
 import Post from './post/Post';
+import { db } from '../../firebase';
+import firebase from 'firebase';
 
 const Feed = () => {
 	const [posts, setPosts] = useState([]);
+	const [message, setMessage] = useState('');
+
+	useEffect(() => {
+		db.collection('posts')
+			.orderBy('timestamp', 'desc')
+			.onSnapshot(snapshot =>
+				setPosts(
+					snapshot.docs.map(doc => ({
+						id: doc.id,
+						data: doc.data(),
+					}))
+				)
+			);
+	}, []);
 
 	const sendPost = ev => {
 		ev.preventDefault();
+		db.collection('posts').add({
+			name: 'Israel Ojeifo',
+			description: 'Master work',
+			message: message,
+			photoUrl: '',
+			timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+		});
+
+		setMessage('');
 	};
 	return (
 		<div className="feed">
@@ -22,7 +47,11 @@ const Feed = () => {
 				<div className="feed__input">
 					<Create />
 					<form>
-						<input type="text" />
+						<input
+							type="text"
+							value={message}
+							onChange={ev => setMessage(ev.target.value)}
+						/>
 						<button type="submit" onClick={sendPost}>
 							Send
 						</button>
@@ -39,18 +68,15 @@ const Feed = () => {
 					/>
 				</div>
 			</div>
-			{posts.map(map => (
+			{posts.map(({ id, data: { name, description, message, photoUrl } }) => (
 				<Post
-					name="Israel Ojeifo"
-					description="From the boss"
-					message="You are watching a master at work"
+					key={id}
+					name={name}
+					description={description}
+					message={message}
+					photoUrl={photoUrl}
 				/>
 			))}
-			<Post
-				name="Israel Ojeifo"
-				description="From the boss"
-				message="You are watching a master at work"
-			/>
 		</div>
 	);
 };

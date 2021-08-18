@@ -11,10 +11,13 @@ import InputOption from './inputOption/InputOption';
 import Post from './post/Post';
 import { db } from '../../firebase';
 import firebase from 'firebase';
+import { useSelector } from 'react-redux';
+import { selectUser } from '../../features/userSlice';
 
 const Feed = () => {
 	const [posts, setPosts] = useState([]);
 	const [message, setMessage] = useState('');
+	const user = useSelector(selectUser);
 
 	useEffect(() => {
 		db.collection('posts')
@@ -32,10 +35,10 @@ const Feed = () => {
 	const sendPost = ev => {
 		ev.preventDefault();
 		db.collection('posts').add({
-			name: 'Israel Ojeifo',
-			description: 'Master work',
+			name: user.displayName,
+			description: user.email,
 			message: message,
-			photoUrl: '',
+			photoUrl: user.photoUrl || '',
 			timestamp: firebase.firestore.FieldValue.serverTimestamp(),
 		});
 
